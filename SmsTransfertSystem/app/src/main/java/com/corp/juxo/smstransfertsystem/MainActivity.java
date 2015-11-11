@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.corp.juxo.smstransfertsystem.listener.GeneralListener;
 
+/**
+ * S0F1
+ */
 public class MainActivity extends AppCompatActivity {
 
     public static Context me;
