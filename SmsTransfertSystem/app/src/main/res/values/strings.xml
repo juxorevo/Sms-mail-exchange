@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SmsTransfertSystem</string>
+    <string name="action_settings">Settings</string>
+    <string name="login_google">Login ex : test@gmail.com</string>
+    <string name="pass_google">Password</string>
+</resources>
