@@ -17,11 +17,15 @@ public class ThreadReceptionMail extends Thread {
     public static boolean execute;
     private Context mContext;
     private Intent intentSent;
+    private String userName;
+    private String password;
 
-    public ThreadReceptionMail(Context c, Intent i){
+    public ThreadReceptionMail(Context c, Intent i, String user, String pass){
         mContext = c;
         intentSent = i;
         execute = true;
+        userName = user;
+        password = pass;
     }
 
     public void run() {
@@ -32,7 +36,9 @@ public class ThreadReceptionMail extends Thread {
             }
         });
 
-        GMailReceiver rM = new GMailReceiver(mContext, intentSent);
+
+
+        GMailReceiver rM = new GMailReceiver(mContext, intentSent, userName, password);
         try {
             while (execute) {
                 Thread.sleep(TEMPS_REFRESH);

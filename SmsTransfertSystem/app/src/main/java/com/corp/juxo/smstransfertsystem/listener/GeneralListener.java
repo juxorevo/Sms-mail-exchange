@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.EditText;
 
 import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.breceiver.SmsControl;
@@ -33,6 +35,7 @@ public class GeneralListener extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+
         if(ThreadReceptionMail.execute){
             MainActivity.activityPrincipal.getHandler().post(new Runnable() {
                 public void run() {
@@ -50,7 +53,13 @@ public class GeneralListener extends Activity implements View.OnClickListener {
 
             SmsReceiver.EXECUTE=true;
 
-            rM = new ThreadReceptionMail(mContext, intentSent);
+            EditText user = MainActivity.activityPrincipal.gettUser();
+            EditText pass = MainActivity.activityPrincipal.gettPassword();
+            rM = new ThreadReceptionMail(mContext,
+                    intentSent,
+                    user.getText().toString(),
+                    pass.getText().toString());
+
             rM.start();
 
             tE = new ThreadEnvoieSms();
@@ -64,6 +73,16 @@ public class GeneralListener extends Activity implements View.OnClickListener {
             MainActivity.activityPrincipal.getHandler().post(new Runnable() {
                 public void run() {
                     MainActivity.activityPrincipal.getButtonStop().setText("Système en marche");
+                    SharedPreferences settings = MainActivity.activityPrincipal
+                                                            .getApplicationContext()
+                                                                .getSharedPreferences("Global",
+                                                                        Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = settings.edit();
+                    EditText user = MainActivity.activityPrincipal.gettUser();
+                    EditText pass = MainActivity.activityPrincipal.gettPassword();
+                    editor.putString("user", user.getText().toString());
+                    editor.putString("pass", pass.getText().toString());
+                    editor.commit();
                 }
             });
         }

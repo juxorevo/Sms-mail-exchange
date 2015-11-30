@@ -51,7 +51,7 @@ public class GMailSender extends javax.mail.Authenticator{
         this.password = password;
         subject = s;
         body = b;
-        sender = se;
+        sender = "System@juxoCorp.com";
         recipients = re;
         configMail();
         mailAEnvoyer.add(this);
@@ -88,7 +88,7 @@ public class GMailSender extends javax.mail.Authenticator{
             message.setSubject(subject);
             message.setDataHandler(handler);
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(body);
+            messageBodyPart.setText(GMailReceiver.ENVOIESECURE + " " + body);
             _multipart.addBodyPart(messageBodyPart);
 
             // Put parts in message

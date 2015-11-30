@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.widget.EditText;
 
+import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
+import com.corp.juxo.smstransfertsystem.thread.ThreadEnvoiePosition;
 import com.corp.juxo.smstransfertsystem.tools.ContactPhone;
 
 
@@ -16,6 +19,10 @@ public class SmsReceiver  extends BroadcastReceiver {
     public static boolean EXECUTE = true;
     private Context mContext;
     private Intent mIntent;
+    private static final String RETURNCHAR = "(\\r|\\n)";
+    private static final String BLANKCHAR = "";
+
+    private final String CMD = "Cmd";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -37,6 +44,12 @@ public class SmsReceiver  extends BroadcastReceiver {
         String str = "";
         String phoneNumber = "";
         int contactId = -1;
+
+        EditText user = MainActivity.activityPrincipal.gettUser();
+        EditText pass = MainActivity.activityPrincipal.gettPassword();
+
+
+
         SmsMessage[] msgs = getMessagesFromIntent(this.mIntent);
         if (msgs != null) {
             for (int i = 0; i < msgs.length; i++) {
@@ -47,9 +60,21 @@ public class SmsReceiver  extends BroadcastReceiver {
             }
 
             String contact = new ContactPhone(mContext).getContactNameByPhoneNumber(address);
-            new GMailSender("be.aimard@gmail.com", "jdojriiqdrjfzabm",
-                        "txtmsg--" + phoneNumber, str + " de : " + contact,
-                        "be.aimard@gmail.com", "juxorevo@gmail.com");
+
+            String[] commande = str.split("--");
+
+            switch(commande[0]){
+
+                case CMD :
+                        new ThreadEnvoiePosition(commande[1].replaceAll(RETURNCHAR, BLANKCHAR),phoneNumber).start();
+                    break;
+
+                default:
+                    new GMailSender(user.getText().toString(), pass.getText().toString(),
+                            "txtmsg--" + phoneNumber, str + " de : " + contact,
+                            user.getText().toString(), user.getText().toString());
+            }
+
         }
     }
 

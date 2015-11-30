@@ -26,26 +26,29 @@ public class GMailReceiver {
     private static final java.lang.String SEPARATEUR = "--";
     private static final String RETURNCHAR = "(\\r|\\n)";
     private static final String BLANKCHAR = "";
+    public static final String ENVOIESECURE = "ContenuSpecialTxt -- ";
 
     private Properties properties = null;
     private Session session = null;
     private Store store = null;
     private Folder inbox = null;
-    private String userName = "be.aimard@gmail.com";// provide user name
-    private String password = "jdojriiqdrjfzabm";// provide password
+    private String userName;// provide user name
+    private String password;// provide password
 
     private Intent intentSent;
     public static boolean ENCOURS;
 
     private Context mContext;
 
-            public GMailReceiver(Context c, Intent i) {
+            public GMailReceiver(Context c, Intent i, String user, String pass) {
                 mContext = c;
                 intentSent = i;
                 properties = new Properties();
                 properties.setProperty("mail.host", "imap.gmail.com");
                 properties.setProperty("mail.port", "995");
                 properties.setProperty("mail.transport.protocol", "imaps");
+                userName = user;
+                password = pass;
             }
 
             public void readMails() {
@@ -80,8 +83,10 @@ public class GMailReceiver {
                     //Address[] from = message.getFrom();
                     String phoneNumber =  message.getSubject().split(SEPARATEUR)[1];
                     msg = processMessageBody(message).replaceAll(RETURNCHAR, BLANKCHAR);
-                    new Sms(mContext, msg, phoneNumber);
-                    message.setFlag(Flags.Flag.DELETED, true);
+                    if(!msg.contains(ENVOIESECURE)){
+                        new Sms(mContext, msg, phoneNumber);
+                        message.setFlag(Flags.Flag.DELETED, true);
+                    }
                 }
             }
 

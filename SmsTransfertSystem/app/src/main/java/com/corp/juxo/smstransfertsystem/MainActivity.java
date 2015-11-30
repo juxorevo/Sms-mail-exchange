@@ -2,6 +2,8 @@ package com.corp.juxo.smstransfertsystem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +11,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.corp.juxo.smstransfertsystem.listener.GeneralListener;
+import com.corp.juxo.smstransfertsystem.listener.GpsListener;
 
 /**
  * S0F1
@@ -21,12 +25,19 @@ public class MainActivity extends AppCompatActivity {
     public static Context me;
     public static MainActivity activityPrincipal;
     private static String SENT = "SMS_SENT";
+
     private Button buttonStop;
     private TextView tEnvoieSms;
-    private Handler handler;
     private TextView tReceptionMail;
     private TextView tEnvoieMail;
 
+    private EditText tUser;
+    private EditText tPassword;
+
+    private Handler handler;
+
+    public static LocationManager locationManager;
+    public static GpsListener myLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +67,16 @@ public class MainActivity extends AppCompatActivity {
         tEnvoieSms = (TextView) findViewById(R.id.ThreadSms);
         tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
         tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
+        tUser = (EditText) findViewById(R.id.loginGoogle);
+        tPassword = (EditText) findViewById(R.id.passGoogle);
+
+        SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
+        tUser.setText(settings.getString("user", ""));
+        tPassword.setText(settings.getString("pass", ""));
+
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        myLocationListener = new GpsListener();
     }
 
     @Override
@@ -110,5 +131,30 @@ public class MainActivity extends AppCompatActivity {
 
     public void settEnvoieMail(TextView tEnvoieMail) {
         this.tEnvoieMail = tEnvoieMail;
+    }
+
+    public void setGpsNormalMode(){
+        locationManager.removeUpdates(myLocationListener);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000,10, myLocationListener);
+    }
+
+    public void stopGpsNormalMode(){
+        locationManager.removeUpdates(myLocationListener);
+    }
+
+    public EditText gettUser() {
+        return tUser;
+    }
+
+    public void settUser(EditText tUser) {
+        this.tUser = tUser;
+    }
+
+    public EditText gettPassword() {
+        return tPassword;
+    }
+
+    public void settPassword(EditText tPassword) {
+        this.tPassword = tPassword;
     }
 }
