@@ -13,10 +13,10 @@ import com.corp.juxo.smstransfertsystem.thread.ThreadEnvoiePosition;
 import com.corp.juxo.smstransfertsystem.tools.ContactPhone;
 
 
-public class SmsReceiver  extends BroadcastReceiver {
+public class SmsReceiver extends BroadcastReceiver {
 
     private final String ACTION_RECEIVE_SMS = "android.provider.Telephony.SMS_RECEIVED";
-    public static boolean EXECUTE = true;
+    public static boolean EXECUTE = false;
     private Context mContext;
     private Intent mIntent;
     private static final String RETURNCHAR = "(\\r|\\n)";

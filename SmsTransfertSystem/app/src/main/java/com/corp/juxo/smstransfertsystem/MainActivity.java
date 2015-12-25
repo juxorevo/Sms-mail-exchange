@@ -2,6 +2,7 @@ package com.corp.juxo.smstransfertsystem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.corp.juxo.smstransfertsystem.listener.GeneralListener;
 import com.corp.juxo.smstransfertsystem.listener.GpsListener;
+import com.corp.juxo.smstransfertsystem.services.CheckMailConnexion;
 
 /**
  * S0F1
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText tPassword;
 
     private Handler handler;
+    private ServiceConnection remoteConnection;
+    private Intent intentService;
 
     public static LocationManager locationManager;
     public static GpsListener myLocationListener;
@@ -55,6 +59,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
+        tUser = (EditText) findViewById(R.id.loginGoogle);
+        tPassword = (EditText) findViewById(R.id.passGoogle);
+        tUser.setText(settings.getString("user", ""));
+        tPassword.setText(settings.getString("pass", ""));
+
+        //DEMARRAGE SERVICE
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        remoteConnection  = new CheckMailConnexion();
+        bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
+
+
         handler = new Handler();
         activityPrincipal = this;
         me = getBaseContext();
@@ -67,12 +84,7 @@ public class MainActivity extends AppCompatActivity {
         tEnvoieSms = (TextView) findViewById(R.id.ThreadSms);
         tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
         tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
-        tUser = (EditText) findViewById(R.id.loginGoogle);
-        tPassword = (EditText) findViewById(R.id.passGoogle);
 
-        SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
-        tUser.setText(settings.getString("user", ""));
-        tPassword.setText(settings.getString("pass", ""));
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -99,6 +111,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(remoteConnection);
+        remoteConnection=null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public synchronized Button getButtonStop(){
