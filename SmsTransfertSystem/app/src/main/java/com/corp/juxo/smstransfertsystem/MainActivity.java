@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler handler;
     private ServiceConnection remoteConnection;
-    private Intent intentService;
 
     public static LocationManager locationManager;
     public static GpsListener myLocationListener;
+    private Intent intentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,33 +62,25 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
         tUser = (EditText) findViewById(R.id.loginGoogle);
         tPassword = (EditText) findViewById(R.id.passGoogle);
+
         tUser.setText(settings.getString("user", ""));
         tPassword.setText(settings.getString("pass", ""));
-
-        //DEMARRAGE SERVICE
-        intentService = new Intent();
-        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
-        remoteConnection  = new CheckMailConnexion();
-        bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
-
 
         handler = new Handler();
         activityPrincipal = this;
         me = getBaseContext();
 
-        Intent intentSent = new Intent(SENT);
 
         buttonStop = (Button)findViewById(R.id.arret);
-        buttonStop.setOnClickListener(new GeneralListener(getApplicationContext(), intentSent));
+        buttonStop.setOnClickListener(new GeneralListener());
 
         tEnvoieSms = (TextView) findViewById(R.id.ThreadSms);
         tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
         tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
 
-
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         myLocationListener = new GpsListener();
+
     }
 
     @Override
@@ -118,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(remoteConnection);
         remoteConnection=null;
+    }
+
+    public void lancerSerice(){
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        ServiceConnection remoteConnection =  new CheckMailConnexion();
+        MainActivity.activityPrincipal.setRemoteConnection(remoteConnection);
+        bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -180,5 +180,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void settPassword(EditText tPassword) {
         this.tPassword = tPassword;
+    }
+
+    public ServiceConnection getRemoteConnection() {
+        return remoteConnection;
+    }
+
+    public void setRemoteConnection(ServiceConnection remoteConnection) {
+        this.remoteConnection = remoteConnection;
     }
 }

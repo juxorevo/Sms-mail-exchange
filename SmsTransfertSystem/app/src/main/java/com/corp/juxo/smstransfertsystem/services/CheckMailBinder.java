@@ -18,18 +18,27 @@ public class CheckMailBinder extends IRemoteCheckMail.Stub {
     }
 
     public void setEnabled(boolean b) throws RemoteException {
+
         service.setExecute(b);
     }
 
     public void setUsername(String u) throws RemoteException {
-        service.setUserName(u);
+        CheckMail.setUserName(u);
     }
 
     public void setPassword(String p) throws RemoteException {
-        service.setPassword(p);
+        CheckMail.setPassword(p);
     }
 
-    public void reload(){
-        service.reload();
+    public void startSystem(){
+        service.startSystem();
+    }
+
+    public void stopSystem(){
+        service.stopSystem();
+    }
+
+    public boolean isOnline(){
+        return service.isOnline();
     }
 }

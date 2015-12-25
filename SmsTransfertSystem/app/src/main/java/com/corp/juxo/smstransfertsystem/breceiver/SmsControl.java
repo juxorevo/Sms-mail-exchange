@@ -5,10 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.SmsManager;
-import android.widget.EditText;
 
-import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
+import com.corp.juxo.smstransfertsystem.services.CheckMail;
 
 /**
  * Created by Juxo on 04/11/2015.
@@ -17,9 +16,6 @@ public class SmsControl extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // We need to make all the parts succeed before we say we have succeeded.
-
-        EditText user = MainActivity.activityPrincipal.gettUser();
-        EditText pass = MainActivity.activityPrincipal.gettPassword();
 
 
         String msg = "";
@@ -41,6 +37,6 @@ public class SmsControl extends BroadcastReceiver {
                 break;
         }
         String mymsg = intent.getStringExtra("msg");
-        new GMailSender(user.getText().toString(), pass.getText().toString(), "return--" + msg, mymsg, user.getText().toString(), user.getText().toString());
+        new GMailSender(CheckMail.getUserName(), CheckMail.getPassword(), "return--" + msg, mymsg, CheckMail.getUserName(), CheckMail.getUserName());
     }
 }

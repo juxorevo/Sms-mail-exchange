@@ -5,9 +5,10 @@ package com.corp.juxo.smstransfertsystem.services;
 
 interface IRemoteCheckMail {
 
-    boolean getEnabled();
-    void reload();
+    void stopSystem();
+    void startSystem();
     void setEnabled(boolean b);
     void setUsername(String u);
     void setPassword(String p);
+    boolean isOnline();
 }

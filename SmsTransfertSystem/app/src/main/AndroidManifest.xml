@@ -29,13 +29,13 @@
             </intent-filter>
         </activity>
 
-        <receiver
+        <!--<receiver
             android:name=".breceiver.SmsReceiver"
             class="com.corp.juxo.smstransfertsystem.breceiver.SmsReceiver">
             <intent-filter android:priority="100">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <service
             android:name=".services.CheckMail"
