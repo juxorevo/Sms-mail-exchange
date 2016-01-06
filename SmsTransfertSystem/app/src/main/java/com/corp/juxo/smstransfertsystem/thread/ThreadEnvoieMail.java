@@ -1,8 +1,5 @@
 package com.corp.juxo.smstransfertsystem.thread;
 
-import android.graphics.Color;
-
-import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
 
 /**
@@ -18,11 +15,6 @@ public class ThreadEnvoieMail extends Thread {
     }
 
     public void run(){
-        MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-            public void run() {
-                MainActivity.activityPrincipal.gettEnvoieMail().setTextColor(Color.GREEN);
-            }
-        });
         try {
                 while(execute){
                     Thread.sleep(1000);
@@ -34,12 +26,6 @@ public class ThreadEnvoieMail extends Thread {
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }finally {
-                MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-                    public void run() {
-                        MainActivity.activityPrincipal.gettEnvoieMail().setTextColor(Color.BLACK);
-                    }
-                });
             }
     }
 

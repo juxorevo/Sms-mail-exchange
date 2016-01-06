@@ -1,7 +1,5 @@
 package com.corp.juxo.smstransfertsystem.thread;
 
-import com.corp.juxo.smstransfertsystem.tools.Commands;
-
 /**
  * Created by Juxo on 30/10/2015.
  */
@@ -14,8 +12,8 @@ public class ThreadEnvoiePosition extends Thread {
         commands = cmd;
         numero = num;
     }
-
+    //TODO A FAIRE
     public void run() {
-        Commands.executeCommande(commands, numero);
+        //Commands.executeCommande(commands, numero);
     }
 }

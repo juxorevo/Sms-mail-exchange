@@ -1,7 +1,9 @@
 package com.corp.juxo.smstransfertsystem;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import com.corp.juxo.smstransfertsystem.listener.GeneralListener;
 import com.corp.juxo.smstransfertsystem.listener.GpsListener;
+import com.corp.juxo.smstransfertsystem.services.CheckMail;
+import com.corp.juxo.smstransfertsystem.services.CheckMailConnexion;
 
 /**
  * S0F1
@@ -35,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText tPassword;
 
     private Handler handler;
+    private ServiceConnection remoteConnection;
 
     public static LocationManager locationManager;
     public static GpsListener myLocationListener;
+    private Intent intentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +61,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        if(!isMyServiceRunning(CheckMail.class)){
+            startService(intentService);
+        }
+
+        openAccess();
+
+        SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
+        tUser = (EditText) findViewById(R.id.loginGoogle);
+        tPassword = (EditText) findViewById(R.id.passGoogle);
+
+        tUser.setText(settings.getString("user", ""));
+        tPassword.setText(settings.getString("pass", ""));
+
         handler = new Handler();
         activityPrincipal = this;
         me = getBaseContext();
 
-        Intent intentSent = new Intent(SENT);
-
         buttonStop = (Button)findViewById(R.id.arret);
-        buttonStop.setOnClickListener(new GeneralListener(getApplicationContext(), intentSent));
+        buttonStop.setOnClickListener(new GeneralListener());
 
         tEnvoieSms = (TextView) findViewById(R.id.ThreadSms);
         tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
         tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
-        tUser = (EditText) findViewById(R.id.loginGoogle);
-        tPassword = (EditText) findViewById(R.id.passGoogle);
-
-        SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
-        tUser.setText(settings.getString("user", ""));
-        tPassword.setText(settings.getString("pass", ""));
-
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         myLocationListener = new GpsListener();
+
     }
 
     @Override
@@ -99,6 +112,42 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        shutDownAccess();
+
+    }
+
+    public void openAccess(){
+        System.out.println("Access Service");
+        remoteConnection =  new CheckMailConnexion();
+        bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void shutDownAccess(){
+        System.out.println("Fin Access Service");
+        if(remoteConnection!=null){
+            unbindService(remoteConnection);
+            remoteConnection=null;
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public synchronized Button getButtonStop(){
@@ -156,5 +205,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void settPassword(EditText tPassword) {
         this.tPassword = tPassword;
+    }
+
+    public ServiceConnection getRemoteConnection() {
+        return remoteConnection;
+    }
+
+    public void setRemoteConnection(ServiceConnection remoteConnection) {
+        this.remoteConnection = remoteConnection;
     }
 }

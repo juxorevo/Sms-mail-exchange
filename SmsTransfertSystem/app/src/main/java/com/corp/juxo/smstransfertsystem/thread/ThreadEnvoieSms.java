@@ -1,8 +1,5 @@
 package com.corp.juxo.smstransfertsystem.thread;
 
-import android.graphics.Color;
-
-import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.sms.Sms;
 
 /**
@@ -19,11 +16,6 @@ public class ThreadEnvoieSms extends Thread{
 
 
     public void run(){
-        MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-            public void run() {
-                MainActivity.activityPrincipal.gettEnvoieSms().setTextColor(Color.GREEN);
-            }
-        });
         try {
             while(execute){
 
@@ -36,12 +28,6 @@ public class ThreadEnvoieSms extends Thread{
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
-            MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-                public void run() {
-                    MainActivity.activityPrincipal.gettEnvoieSms().setTextColor(Color.BLACK);
-                }
-            });
         }
     }
 

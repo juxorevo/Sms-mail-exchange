@@ -82,7 +82,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Stop Sniffing"
+            android:text="Système à l'arrêt"
             android:id="@+id/arret"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
