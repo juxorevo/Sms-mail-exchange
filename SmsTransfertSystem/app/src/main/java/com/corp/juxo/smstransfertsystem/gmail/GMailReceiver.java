@@ -27,6 +27,8 @@ public class GMailReceiver {
     private static final String RETURNCHAR = "(\\r|\\n)";
     private static final String BLANKCHAR = "";
     public static final String ENVOIESECURE = "ContenuSpecialTxt -- ";
+    private static final String ENVOIERETOUR = "Re" ;
+    private static final String identificateurEnvoie = "txtmsg";
 
     private Properties properties = null;
     private Session session = null;
@@ -62,7 +64,7 @@ public class GMailReceiver {
                 try {
                     store = session.getStore("imaps");
                     store.connect();
-                    inbox = store.getFolder("txtmsg");
+                    inbox = store.getFolder("inbox");
                     inbox.open(Folder.READ_WRITE);
                     Message messages[] = inbox.getMessages();
                     getExtractionContent(messages);
@@ -81,11 +83,14 @@ public class GMailReceiver {
                 for (int i = 0; i < messages.length; i++) {
                     Message message = messages[i];
                     //Address[] from = message.getFrom();
-                    String phoneNumber =  message.getSubject().split(SEPARATEUR)[1];
-                    msg = processMessageBody(message).replaceAll(RETURNCHAR, BLANKCHAR);
-                    if(!msg.contains(ENVOIESECURE)){
-                        new Sms(mContext, msg, phoneNumber);
-                        message.setFlag(Flags.Flag.DELETED, true);
+                    if(message.getSubject().contains(identificateurEnvoie)) {
+                        String identificateur = message.getSubject().split(SEPARATEUR)[0];
+                        String phoneNumber = message.getSubject().split(SEPARATEUR)[1];
+                        msg = processMessageBody(message).replaceAll(RETURNCHAR, BLANKCHAR);
+                        if (identificateur.contains(ENVOIERETOUR) && !msg.contains(ENVOIESECURE)) {
+                            new Sms(mContext, msg, phoneNumber);
+                            message.setFlag(Flags.Flag.DELETED, true);
+                        }
                     }
                 }
             }

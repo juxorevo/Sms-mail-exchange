@@ -24,10 +24,15 @@ public class GeneralListener extends Activity implements View.OnClickListener {
 
         try {
             if (CheckMailConnexion.remoteService!=null && CheckMailConnexion.remoteService.isOnline()) {
-                CheckMailConnexion.remoteService.stopSystem();
-                MainActivity.activityPrincipal.getHandler().post(new Runnable() {
+               // CheckMailConnexion.remoteService.stopSystem();
+               /* MainActivity.activityPrincipal.getHandler().post(new Runnable() {
                     public void run() {
                         MainActivity.activityPrincipal.getButtonStop().setText("Système à l'arrêt");
+                    }
+                });*/
+                MainActivity.activityPrincipal.getHandler().post(new Runnable() {
+                    public void run() {
+                        MainActivity.activityPrincipal.shutDownAccess();
                     }
                 });
             } else{
@@ -44,12 +49,13 @@ public class GeneralListener extends Activity implements View.OnClickListener {
                         editor.putString("pass", pass.getText().toString());
                         editor.commit();
 
-                        if(!user.getText().toString().equals("")){
-                            MainActivity.activityPrincipal.lancerSerice();
+                        if(CheckMailConnexion.remoteService == null && !user.getText().toString().equals("")){
+                            MainActivity.activityPrincipal.openAccess();
                         }
                         try {
                             if(CheckMailConnexion.remoteService!=null && !CheckMailConnexion.remoteService.isOnline()){
                                 CheckMailConnexion.remoteService.startSystem();
+                                MainActivity.activityPrincipal.getButtonStop().setText("Système lancé");
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();

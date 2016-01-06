@@ -23,13 +23,20 @@ public class CheckMailConnexion implements ServiceConnection {
                     .getSharedPreferences("Global", Context.MODE_PRIVATE);
             remoteService.setUsername(settings.getString("user", ""));
             remoteService.setPassword(settings.getString("pass", ""));
+            System.out.println("onServiceConnected : " + remoteService.isOnline());
         }
         catch (RemoteException e) {
+
         }
     }
 
     public void onServiceDisconnected(ComponentName name) {
+        try {
+            System.out.println("onServiceConnected : " + remoteService.isOnline());
+        }
+        catch (RemoteException e){
 
+        }
     }
 
 }

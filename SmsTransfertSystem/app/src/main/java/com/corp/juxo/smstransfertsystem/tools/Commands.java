@@ -5,7 +5,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 
-import com.corp.juxo.smstransfertsystem.MainActivity;
 import com.corp.juxo.smstransfertsystem.listener.GpsListener;
 import com.corp.juxo.smstransfertsystem.sms.Sms;
 
@@ -19,27 +18,28 @@ public class Commands {
 
     public static final String POSITION = "position";
 
-    public static void executeCommande(String cmd, String numero){
+    public static void executeCommande(String cmd, String numero, Context context){
 
         switch (cmd){
 
             case POSITION :
-                CreateSmsPosition(numero);
+                CreateSmsPosition(numero, context);
                 break;
 
         }
     }
 
-    public static void CreateSmsPosition(String telReponse){
-        GpsListener.loc=null;
+    public static void setGpsNormalMode(){
 
-        Context context = MainActivity.me.getApplicationContext();
-        MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-            public void run() {
-                MainActivity.activityPrincipal.setGpsNormalMode();
-            }
-        });
+    }
+
+    public static void CreateSmsPosition(String telReponse, Context context){
+        GpsListener.loc=null;
         int i = 0;
+
+        //Location locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //LocationListener myLocationListener = new GpsListener();
+
         while(GpsListener.loc == null && i <60){
             try {
                 Thread.sleep(1000);
@@ -65,11 +65,6 @@ public class Commands {
         }else{
             new Sms(context,"Je ne trouve pas la position de Benjamin Désolé ...",telReponse);
         }
-        MainActivity.activityPrincipal.getHandler().post(new Runnable() {
-            public void run() {
-                MainActivity.activityPrincipal.stopGpsNormalMode();
-            }
-        });
     }
 
     public static String getAdresse(double latitude, double longitude, Geocoder geocoder, Context c) {

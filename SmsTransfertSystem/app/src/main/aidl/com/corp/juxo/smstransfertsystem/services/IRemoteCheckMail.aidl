@@ -7,7 +7,6 @@ interface IRemoteCheckMail {
 
     void stopSystem();
     void startSystem();
-    void setEnabled(boolean b);
     void setUsername(String u);
     void setPassword(String p);
     boolean isOnline();

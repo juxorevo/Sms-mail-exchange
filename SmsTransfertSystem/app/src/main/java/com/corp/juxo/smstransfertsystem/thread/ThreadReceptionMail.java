@@ -40,6 +40,7 @@ public class ThreadReceptionMail extends Thread {
 
         try {
             while (execute) {
+                System.out.println(CheckMail.me.isOnline());
                 userName = CheckMail.getUserName();
                 password = CheckMail.getPassword();
                 Thread.sleep(TEMPS_REFRESH);

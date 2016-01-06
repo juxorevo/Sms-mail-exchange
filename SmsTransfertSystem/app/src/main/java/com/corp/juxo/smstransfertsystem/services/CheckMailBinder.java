@@ -13,15 +13,6 @@ public class CheckMailBinder extends IRemoteCheckMail.Stub {
         this.service = service;
     }
 
-    public boolean getEnabled() throws RemoteException{
-        return service.isExecute();
-    }
-
-    public void setEnabled(boolean b) throws RemoteException {
-
-        service.setExecute(b);
-    }
-
     public void setUsername(String u) throws RemoteException {
         CheckMail.setUserName(u);
     }

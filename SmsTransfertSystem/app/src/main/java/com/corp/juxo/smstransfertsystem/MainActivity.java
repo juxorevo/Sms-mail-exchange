@@ -1,5 +1,6 @@
 package com.corp.juxo.smstransfertsystem;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.corp.juxo.smstransfertsystem.listener.GeneralListener;
 import com.corp.juxo.smstransfertsystem.listener.GpsListener;
+import com.corp.juxo.smstransfertsystem.services.CheckMail;
 import com.corp.juxo.smstransfertsystem.services.CheckMailConnexion;
 
 /**
@@ -59,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        if(!isMyServiceRunning(CheckMail.class)){
+            startService(intentService);
+        }
+
+        openAccess();
+
         SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
         tUser = (EditText) findViewById(R.id.loginGoogle);
         tPassword = (EditText) findViewById(R.id.passGoogle);
@@ -69,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler();
         activityPrincipal = this;
         me = getBaseContext();
-
 
         buttonStop = (Button)findViewById(R.id.arret);
         buttonStop.setOnClickListener(new GeneralListener());
@@ -108,16 +117,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(remoteConnection);
-        remoteConnection=null;
+        shutDownAccess();
+
     }
 
-    public void lancerSerice(){
-        intentService = new Intent();
-        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
-        ServiceConnection remoteConnection =  new CheckMailConnexion();
-        MainActivity.activityPrincipal.setRemoteConnection(remoteConnection);
+    public void openAccess(){
+        System.out.println("Access Service");
+        remoteConnection =  new CheckMailConnexion();
         bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void shutDownAccess(){
+        System.out.println("Fin Access Service");
+        if(remoteConnection!=null){
+            unbindService(remoteConnection);
+            remoteConnection=null;
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
