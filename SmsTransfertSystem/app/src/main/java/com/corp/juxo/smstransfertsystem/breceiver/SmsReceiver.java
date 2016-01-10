@@ -70,7 +70,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     break;
 
                 default:
-                    new GMailSender(username, password,"txtmsg--" + phoneNumber, str + " de : " + contact,username, username);
+                    new GMailSender(username, password,"txtmsg--" + phoneNumber + "-- "+ contact, str,username, username);
             }
 
         }

@@ -15,6 +15,7 @@ import com.corp.juxo.smstransfertsystem.MainActivity;
 public class CheckMailConnexion implements ServiceConnection {
 
     public static IRemoteCheckMail remoteService;
+    public boolean connected = false;
 
     public void onServiceConnected(ComponentName className, IBinder service) {
          remoteService = IRemoteCheckMail.Stub.asInterface(service);
@@ -23,20 +24,15 @@ public class CheckMailConnexion implements ServiceConnection {
                     .getSharedPreferences("Global", Context.MODE_PRIVATE);
             remoteService.setUsername(settings.getString("user", ""));
             remoteService.setPassword(settings.getString("pass", ""));
-            System.out.println("onServiceConnected : " + remoteService.isOnline());
+            connected = true;
         }
         catch (RemoteException e) {
-
+            connected = false;
         }
     }
 
     public void onServiceDisconnected(ComponentName name) {
-        try {
-            System.out.println("onServiceConnected : " + remoteService.isOnline());
-        }
-        catch (RemoteException e){
-
-        }
+            connected = false;
     }
 
 }

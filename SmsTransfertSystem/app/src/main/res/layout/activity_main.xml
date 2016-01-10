@@ -55,8 +55,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Moteur d'envoie de SMS"
-            android:id="@+id/ThreadSms"
+            android:text="@string/connexionService"
+            android:id="@+id/ConnecServ"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             />

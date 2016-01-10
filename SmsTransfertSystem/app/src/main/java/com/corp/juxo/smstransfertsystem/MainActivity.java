@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,10 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static Context me;
     public static MainActivity activityPrincipal;
-    private static String SENT = "SMS_SENT";
 
     private Button buttonStop;
-    private TextView tEnvoieSms;
+    private TextView connexionService;
     private TextView tReceptionMail;
     private TextView tEnvoieMail;
 
@@ -61,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        //Accès à l'inteface graphique
+        buttonStop = (Button)findViewById(R.id.arret);
+        buttonStop.setOnClickListener(new GeneralListener());
+
+        connexionService = (TextView) findViewById(R.id.ConnecServ);
+        tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
+        tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
+
         intentService = new Intent();
         intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
         if(!isMyServiceRunning(CheckMail.class)){
@@ -80,16 +89,21 @@ public class MainActivity extends AppCompatActivity {
         activityPrincipal = this;
         me = getBaseContext();
 
-        buttonStop = (Button)findViewById(R.id.arret);
-        buttonStop.setOnClickListener(new GeneralListener());
-
-        tEnvoieSms = (TextView) findViewById(R.id.ThreadSms);
-        tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
-        tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         myLocationListener = new GpsListener();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        if(!isMyServiceRunning(CheckMail.class)){
+            startService(intentService);
+        }
+
+        openAccess();
     }
 
     @Override
@@ -122,16 +136,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openAccess(){
-        System.out.println("Access Service");
-        remoteConnection =  new CheckMailConnexion();
-        bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
+        //Connection au service
+        if(isMyServiceRunning(CheckMail.class) && remoteConnection == null){
+            remoteConnection =  new CheckMailConnexion();
+            bindService(intentService, remoteConnection, Context.BIND_AUTO_CREATE);
+        }
+
+        checkServiceOnline();
+        connexionService.setTextColor(Color.GREEN);
     }
 
     public void shutDownAccess(){
-        System.out.println("Fin Access Service");
-        if(remoteConnection!=null){
-            unbindService(remoteConnection);
-            remoteConnection=null;
+        if(isMyServiceRunning(CheckMail.class)) {
+            if (remoteConnection != null) {
+                unbindService(remoteConnection);
+                remoteConnection = null;
+            }
+        }
+        checkServiceOnline();
+        buttonStop.setText("Accès au service coupé");
+        connexionService.setTextColor(Color.BLACK);
+    }
+
+    public void checkServiceOnline(){
+        //Test si le service est en route
+        try {
+            if(CheckMailConnexion.remoteService!=null && CheckMailConnexion.remoteService.isOnline()){
+                buttonStop.setText("System lancé");
+            }else{
+                buttonStop.setText("System stoppé");
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -145,10 +182,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+
 
     public synchronized Button getButtonStop(){
         return buttonStop;
@@ -158,12 +192,12 @@ public class MainActivity extends AppCompatActivity {
         return handler;
     }
 
-    public synchronized TextView gettEnvoieSms() {
-        return tEnvoieSms;
+    public synchronized TextView getConnexionService() {
+        return connexionService;
     }
 
-    public void settEnvoieSms(TextView tEnvoieSms) {
-        this.tEnvoieSms = tEnvoieSms;
+    public void setConnexionService(TextView connexionService) {
+        this.connexionService = connexionService;
     }
 
     public synchronized TextView gettReceptionMail() {

@@ -12,6 +12,7 @@ import com.corp.juxo.smstransfertsystem.services.CheckMail;
 /**
  * Created by Juxo on 04/11/2015.
  */
+@Deprecated
 public class SmsControl extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
