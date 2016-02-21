@@ -57,6 +57,18 @@ public class GMailSender extends javax.mail.Authenticator{
         mailAEnvoyer.add(this);
     }
 
+    public GMailSender(String user, String password, String s, String b, String se, String re, String attachement) throws Exception {
+        this.user = user;
+        this.password = password;
+        subject = s;
+        body = b;
+        sender = "System@juxoCorp.com";
+        recipients = re;
+        configMail();
+        mailAEnvoyer.add(this);
+        addAttachment(attachement);
+    }
+
     private void configMail() {
         props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");

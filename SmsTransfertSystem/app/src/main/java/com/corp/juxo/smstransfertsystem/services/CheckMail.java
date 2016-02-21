@@ -5,16 +5,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
+import com.corp.juxo.smstransfertsystem.breceiver.MMSReceiver;
 import com.corp.juxo.smstransfertsystem.breceiver.SmsReceiver;
 import com.corp.juxo.smstransfertsystem.thread.ThreadEnvoieMail;
 import com.corp.juxo.smstransfertsystem.thread.ThreadEnvoieSms;
 import com.corp.juxo.smstransfertsystem.thread.ThreadReceptionMail;
+import com.corp.juxo.smstransfertsystem.tools.MmsTools;
 
 public class CheckMail extends Service {
 
     private final int TEMPS_REFRESH = 2000;
     private static String SENT = "SMS_SENT";
-    private static String SMSSENT = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String SMSSENT = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String ACTION_MMS_RECEIVED = "android.provider.Telephony.WAP_PUSH_RECEIVED";
+    private static final String MMS_DATA_TYPE = "application/vnd.wap.mms-message";
     public static CheckMail me;
     private Intent intentSent;
     private CheckMailBinder binder;
@@ -22,9 +26,12 @@ public class CheckMail extends Service {
     private ThreadEnvoieSms tE;
     private ThreadEnvoieMail tM;
     private SmsReceiver receiverSms;
+    private MMSReceiver receiverMms;
     private static String username;
     private static String password;
     private boolean online = false;
+    public IntentFilter mmsIntent;
+    public static int MMS_NUMBER;
 
 
     public CheckMail() {
@@ -87,7 +94,25 @@ public class CheckMail extends Service {
         receiverSms = new SmsReceiver();
         this.registerReceiver(receiverSms, new IntentFilter(SMSSENT));
 
+        try {
+            this.unregisterReceiver(receiverMms);
+            receiverMms = null;
+        }catch(IllegalArgumentException e){
+        }
+        receiverMms = new MMSReceiver();
+
+        try {
+            mmsIntent = new IntentFilter(ACTION_MMS_RECEIVED);
+            mmsIntent.addDataType(MMS_DATA_TYPE);
+
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            e.printStackTrace();
+        }
+        this.registerReceiver(receiverMms,mmsIntent);
+
         online = true;
+        MMS_NUMBER = MmsTools.getLastIdMms(getContentResolver());
+        System.out.println(" ------------------ Nombre MMS : " + MMS_NUMBER);
     }
 
 

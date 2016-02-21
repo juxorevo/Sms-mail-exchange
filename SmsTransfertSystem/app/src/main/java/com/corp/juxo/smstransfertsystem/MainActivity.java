@@ -70,14 +70,6 @@ public class MainActivity extends AppCompatActivity {
         tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
         tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
 
-        intentService = new Intent();
-        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
-        if(!isMyServiceRunning(CheckMail.class)){
-            startService(intentService);
-        }
-
-        openAccess();
-
         SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
         tUser = (EditText) findViewById(R.id.loginGoogle);
         tPassword = (EditText) findViewById(R.id.passGoogle);
@@ -92,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         myLocationListener = new GpsListener();
 
+        intentService = new Intent();
+        intentService.setClassName("com.corp.juxo.smstransfertsystem", "com.corp.juxo.smstransfertsystem.services.CheckMail");
+        if(!isMyServiceRunning(CheckMail.class)){
+            startService(intentService);
+        }
+        openAccess();
     }
 
     @Override
