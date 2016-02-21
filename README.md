@@ -1,6 +1,7 @@
-# Sms-Mail
+# Sms/Mms-Mail
 Envoie vos sms par mail.
 Envoie vos mail par sms.
+Envoie vos mms par mail avec la photo. Pas de prise en charge du texte encore fonction en ALPHA
 
 
 Installation de l'application : 
