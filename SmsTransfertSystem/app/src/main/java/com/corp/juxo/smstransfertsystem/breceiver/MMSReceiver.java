@@ -23,7 +23,7 @@ public class MMSReceiver extends BroadcastReceiver {
         System.out.println("MMS Recu traitement en cours");
         if(action.equals(ACTION_MMS_RECEIVED) && type.equals(MMS_DATA_TYPE)){
             if(!ThreadCheckMms.execute) {
-                ThreadCheckMms tCheck = new ThreadCheckMms(context.getContentResolver());
+                ThreadCheckMms tCheck = new ThreadCheckMms(context);
                 tCheck.start();
             }
         }

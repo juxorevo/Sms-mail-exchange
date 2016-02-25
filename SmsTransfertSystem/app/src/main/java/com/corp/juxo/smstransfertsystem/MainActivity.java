@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         buttonStop.setOnClickListener(new GeneralListener());
 
         connexionService = (TextView) findViewById(R.id.ConnecServ);
-        tReceptionMail = (TextView) findViewById(R.id.ThreadReceptionMail);
-        tEnvoieMail = (TextView) findViewById(R.id.ThreadEnvoieMail);
 
         SharedPreferences settings = getSharedPreferences("Global", Context.MODE_PRIVATE);
         tUser = (EditText) findViewById(R.id.loginGoogle);

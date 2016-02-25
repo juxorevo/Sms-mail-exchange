@@ -61,24 +61,6 @@
             android:layout_alignParentStart="true"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Moteur de réception des mails"
-            android:id="@+id/ThreadReceptionMail"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Moteur d'envoie des mails"
-            android:id="@+id/ThreadEnvoieMail"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            />
-
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -87,6 +69,15 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/about"
+            android:id="@+id/about"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
 
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.corp.juxo.smstransfertsystem.tools;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,9 +42,10 @@ public class MmsTools {
         return lastId;
     }
 
-    public static List<String> saveLastMmsBitmap(ContentResolver r, int lastKnowid){
+    public static List<MmsInformation> saveLastMmsBitmap(Context c, int lastKnowid){
         final String[] projection = new String[] {"*"};
-        List<String> listFileDetected  = new ArrayList<>();
+        ContentResolver r = c.getContentResolver();
+        List<MmsInformation> listFileDetected  = new ArrayList<>();
         Uri uri = Uri.parse("content://mms/part");
         Cursor query = r.query(uri, projection, null, null, "_id DESC");
         int id = 0;
@@ -56,7 +58,11 @@ public class MmsTools {
                             "image/gif".equals(type) || "image/jpg".equals(type) ||
                             "image/png".equals(type)) {
                         Bitmap bitmap = getMmsImage(query.getString(query.getColumnIndex("_id")),r);
-                        listFileDetected.add(saveBitmap(query.getString(query.getColumnIndex("_id")), bitmap));
+                        String bitmapLink = saveBitmap(query.getString(query.getColumnIndex("_id")), bitmap);
+                        String msgTxt = getMessageMms(query.getString(query.getColumnIndex("_id")), r);
+                        String phoneNumer = getAddressNumber(query.getString(query.getColumnIndex("_id")),r);
+                        String contactName = new ContactPhone(c).getContactNameByPhoneNumber(phoneNumer);
+                        listFileDetected.add(new MmsInformation(phoneNumer,bitmapLink,contactName, msgTxt));
                     }
 
                 }catch(NullPointerException e){
@@ -145,31 +151,29 @@ public class MmsTools {
 
 
     public static String getAddressNumber(String id, ContentResolver r) {
-        String selectionAdd = new String("msg_id=" + id);
+        String addrSelection = "type=137 AND msg_id=" + id;
         String uriStr = MessageFormat.format("content://mms/{0}/addr", id);
         Uri uriAddress = Uri.parse(uriStr);
-        Cursor cAdd = r.query(uriAddress, null,
-                selectionAdd, null, null);
-        String name = null;
-        if (cAdd.moveToFirst()) {
+        String[] columns = { "address" };
+        Cursor cursor = r.query(uriAddress, columns,
+                addrSelection, null, null);
+        String address = "";
+        String val;
+        if (cursor.moveToFirst()) {
             do {
-                String number = cAdd.getString(cAdd.getColumnIndex("address"));
-                if (number != null) {
-                    try {
-                        Long.parseLong(number.replace("-", ""));
-                        name = number;
-                    } catch (NumberFormatException nfe) {
-                        if (name == null) {
-                            name = number;
-                        }
-                    }
+                val = cursor.getString(cursor.getColumnIndex("address"));
+                if (val != null) {
+                    address = val;
+                    // Use the first one found if more than one
+                    break;
                 }
-            } while (cAdd.moveToNext());
+            } while (cursor.moveToNext());
         }
-        if (cAdd != null) {
-            cAdd.close();
+        if (cursor != null) {
+            cursor.close();
         }
-        return name;
+        // return address.replaceAll("[^0-9]", "");
+        return address;
     }
 
     public static String saveBitmap(String fileName, Bitmap bmp){

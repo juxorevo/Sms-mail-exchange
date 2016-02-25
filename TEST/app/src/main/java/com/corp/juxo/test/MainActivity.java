@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.MessageFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
                             "image/gif".equals(type) || "image/jpg".equals(type) ||
                             "image/png".equals(type)) {
                         Bitmap bitmap = getMmsImage(query.getString(query.getColumnIndex("_id")));
+                        String bitmapLink = saveBitmap(query.getString(query.getColumnIndex("_id")), bitmap);
+                        String msgTxt = getMessageMms(query.getString(query.getColumnIndex("_id")));
+                        String phoneNumer = getAddressNumber(query.getString(query.getColumnIndex("_id")));
+                        //String contactName = new ContactPhone(c).getContactNameByPhoneNumber(phoneNumer);
+                        System.out.println(query.getString(query.getColumnIndex("mid")));
                         System.out.println(saveBitmap("photo1", bitmap));
                     }
                     // saveLastMmsBitmap(query.getString(query.getColumnIndex("_id")), getContentResolver());
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void trouvermms(String mmsId){
+    private String getMessageMms(String mmsId){
         String selectionPart = "mid=" + mmsId;
         Uri uri = Uri.parse("content://mms/part");
         Cursor cursor = getContentResolver().query(uri, null,selectionPart, null, null);
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        System.out.println(mmsId + " : " + body + " sender " + getAddressNumber(mmsId));
+        return body;
     }
 
     private String getMmsText(String id) {
@@ -172,31 +176,28 @@ public class MainActivity extends AppCompatActivity {
         return bitmap;
     }
     private String getAddressNumber(String id) {
-        String selectionAdd = new String("msg_id=" + id);
-        String uriStr = MessageFormat.format("content://mms/{0}/addr", id);
-        Uri uriAddress = Uri.parse(uriStr);
-        Cursor cAdd = getContentResolver().query(uriAddress, null,
-                selectionAdd, null, null);
-        String name = null;
-        if (cAdd.moveToFirst()) {
+        String add = "";
+        final String[] projection = new String[] {"address","contact_id","charset","type"};
+        final String selection = "type=137 or type=151"; // PduHeaders
+        Uri.Builder builder = Uri.parse("content://mms").buildUpon();
+        builder.appendPath(String.valueOf(id)).appendPath("addr");
+
+        Cursor cursor = getContentResolver().query(
+                builder.build(),
+                projection,
+                selection,
+                null, null);
+
+        if (cursor.moveToFirst()) {
             do {
-                String number = cAdd.getString(cAdd.getColumnIndex("address"));
-                if (number != null) {
-                    try {
-                        Long.parseLong(number.replace("-", ""));
-                        name = number;
-                    } catch (NumberFormatException nfe) {
-                        if (name == null) {
-                            name = number;
-                        }
-                    }
-                }
-            } while (cAdd.moveToNext());
+                 add = cursor.getString(cursor.getColumnIndex("address"));
+                String typet =  cursor.getString(cursor.getColumnIndex("type"));
+            } while(cursor.moveToNext());
         }
-        if (cAdd != null) {
-            cAdd.close();
-        }
-        return name;
+        // Outbound messages address type=137 and the value will be 'insert-address-token'
+        // Outbound messages address type=151 and the value will be the address
+        // Additional checking can be done here to return the correct address.
+        return add;
     }
 
 }

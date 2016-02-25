@@ -82,10 +82,8 @@ public class GMailReceiver {
 
     public void getExtractionContent(Message[] messages) throws MessagingException {
         String msg = "";
-        for (int i = 0; i < messages.length; i++) {
-            Message message = messages[i];
-            System.out.println(message.getSubject());
-            if (message.getSubject().contains(identificateurEnvoie)) {
+         for (Message message : messages) {
+            if (message.getSubject().contains(identificateurEnvoie) && message.getFrom()[0].toString().contains(userName)) {
                 String identificateur = message.getSubject().split(SEPARATEUR)[0];
                 String phoneNumber = message.getSubject().split(SEPARATEUR)[1];
                 msg = processMessageBody(message).replaceAll(RETURNCHAR, BLANKCHAR);
@@ -100,6 +98,7 @@ public class GMailReceiver {
                 message.setFlag(Flags.Flag.SEEN, false);
             }
         }
+
     }
 
     public String processMessageBody(Message message) {
