@@ -21,18 +21,15 @@ public class GeneralListener extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
         try {
             if (CheckMailConnexion.remoteService!=null && CheckMailConnexion.remoteService.isOnline()) {
                 try {
-                    if(CheckMailConnexion.remoteService!=null && !CheckMailConnexion.remoteService.isOnline()){
                         CheckMailConnexion.remoteService.stopSystem();
                         MainActivity.activityPrincipal.checkServiceOnline();
-                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-            } else{
+            }else{
                 MainActivity.activityPrincipal.getHandler().post(new Runnable() {
                     public void run() {
                         SharedPreferences settings = MainActivity.activityPrincipal

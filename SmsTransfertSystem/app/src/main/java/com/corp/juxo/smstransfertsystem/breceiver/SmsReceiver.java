@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 
+import com.corp.juxo.smstransfertsystem.gmail.GMailConnexion;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
 import com.corp.juxo.smstransfertsystem.services.CheckMail;
 import com.corp.juxo.smstransfertsystem.thread.ThreadEnvoiePosition;
@@ -70,7 +71,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     break;
 
                 default:
-                    new GMailSender(username, password,"txtmsg--" + phoneNumber + "-- "+ contact, str,username, username);
+                    new GMailSender(GMailConnexion.myConnexion, "txtmsg--" + phoneNumber + "-- "+ contact, str, GMailConnexion.myConnexion.getUserName());
             }
 
         }

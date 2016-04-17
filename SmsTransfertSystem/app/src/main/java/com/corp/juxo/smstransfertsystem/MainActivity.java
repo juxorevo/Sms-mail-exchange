@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         if(!isMyServiceRunning(CheckMail.class)){
             startService(intentService);
         }
-
         openAccess();
     }
 
@@ -128,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         shutDownAccess();
-
     }
 
     public void openAccess(){

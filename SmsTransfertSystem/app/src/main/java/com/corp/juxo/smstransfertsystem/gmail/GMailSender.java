@@ -6,7 +6,6 @@ import com.corp.juxo.smstransfertsystem.gmail.secureGmail.JSSEProvider;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -14,8 +13,6 @@ import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -25,70 +22,47 @@ import javax.mail.internet.MimeMultipart;
 
 public class GMailSender extends javax.mail.Authenticator{
 
-    private String mailHost = "smtp.gmail.com";
-    private String user;
-    private String password;
-    private Session session;
-
     private String subject;
     private String body;
     private String sender;
     private String recipients;
-    private Properties props;
 
     private Multipart _multipart = new MimeMultipart();
-
-
     private static List<GMailSender> mailAEnvoyer = new ArrayList<>();
+
+    private GMailConnexion gConnexion;
 
     static {
         Security.addProvider(new JSSEProvider());
     }
 
 
-    public GMailSender(String user, String password, String s, String b, String se, String re) {
-        this.user = user;
-        this.password = password;
+    public GMailSender(GMailConnexion con, String s, String b, String re) {
+        gConnexion=con;
         subject = s;
         body = b;
         sender = "System@juxoCorp.com";
         recipients = re;
-        configMail();
         mailAEnvoyer.add(this);
     }
 
-    public GMailSender(String user, String password, String s, String b, String se, String re, String attachement) throws Exception {
-        this.user = user;
-        this.password = password;
+    public GMailSender(GMailConnexion con, String s, String b, String re, String attachement) throws Exception {
+        gConnexion=con;
         subject = s;
         body = b;
         sender = "System@juxoCorp.com";
         recipients = re;
-        configMail();
         mailAEnvoyer.add(this);
         addAttachment(attachement);
     }
 
-    private void configMail() {
-        props = new Properties();
-        props.setProperty("mail.transport.protocol", "smtp");
-        props.setProperty("mail.host", mailHost);
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.socketFactory.fallback", "false");
-        props.setProperty("mail.smtp.quitwait", "false");
-        session = Session.getDefaultInstance(props, this);
-    }
 
-    protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(user, password);
-    }
+
+
 
     public synchronized void sendMail(){
         try {
-            MimeMessage message = new MimeMessage(session);
+            MimeMessage message = new MimeMessage(gConnexion.getSession());
             DataHandler handler;
             if(body!=null){
                 handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
@@ -100,7 +74,7 @@ public class GMailSender extends javax.mail.Authenticator{
             message.setSubject(subject);
             message.setDataHandler(handler);
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(GMailReceiver.ENVOIESECURE + " " + body);
+            messageBodyPart.setText(GMailConnexion.ENVOIESECURE + " " + body);
             _multipart.addBodyPart(messageBodyPart);
 
             // Put parts in message

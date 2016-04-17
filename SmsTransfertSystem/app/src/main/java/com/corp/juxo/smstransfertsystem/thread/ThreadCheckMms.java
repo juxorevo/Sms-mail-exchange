@@ -2,6 +2,7 @@ package com.corp.juxo.smstransfertsystem.thread;
 
 import android.content.Context;
 
+import com.corp.juxo.smstransfertsystem.gmail.GMailConnexion;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
 import com.corp.juxo.smstransfertsystem.services.CheckMail;
 import com.corp.juxo.smstransfertsystem.tools.MmsInformation;
@@ -15,25 +16,26 @@ import java.util.List;
 public class ThreadCheckMms extends Thread {
     public static boolean execute;
 
-    public Context c;
-    public String username;
-    public String password;
+    public Context mContext;
 
     public ThreadCheckMms(Context c){
-        this.c= c;
-        username = CheckMail.getUserName();
-        password = CheckMail.getPassword();
+        this.mContext= c;
         execute = true;
     }
 
     public void run(){
         try {
+                new GMailConnexion(mContext, CheckMail.getUserName(), CheckMail.getPassword());
                 System.out.println("Thread Check mms GO");
                 Thread.sleep(5000);
-                List<MmsInformation> fileDetected = MmsTools.saveLastMmsBitmap(c, CheckMail.MMS_NUMBER);
-                CheckMail.MMS_NUMBER = MmsTools.getLastIdMms(c.getContentResolver());
+                List<MmsInformation> fileDetected = MmsTools.saveLastMmsBitmap(mContext, CheckMail.MMS_NUMBER);
+                CheckMail.MMS_NUMBER = MmsTools.getLastIdMms(mContext.getContentResolver());
                 for(MmsInformation s : fileDetected){
-                    new GMailSender(username, password,"txtmsg--"+ s.phoneNumber + "-- "+s.contactName, s.message,username, username, s.image);
+                    new GMailSender(GMailConnexion.myConnexion
+                            ,"txtmsg--"+ s.phoneNumber + "-- "+s.contactName
+                            ,s.message
+                            ,GMailConnexion.myConnexion.getUserName()
+                            , s.image);
                 }
         } catch (InterruptedException e) {
             e.printStackTrace();

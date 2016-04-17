@@ -4,5 +4,5 @@
     <string name="login_google">Login ex : test@gmail.com</string>
     <string name="pass_google">Password</string>
     <string name="connexionService">Connecté au service</string>
-    <string name="about">Developped by Benjamin AIMARD be.aimard@gmail.com V1.1.1</string>
+    <string name="about">Developped by Benjamin AIMARD be.aimard@gmail.com V1.1.2</string>
 </resources>

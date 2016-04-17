@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.SmsManager;
 
+import com.corp.juxo.smstransfertsystem.gmail.GMailConnexion;
 import com.corp.juxo.smstransfertsystem.gmail.GMailSender;
 import com.corp.juxo.smstransfertsystem.services.CheckMail;
 
@@ -38,6 +39,6 @@ public class SmsControl extends BroadcastReceiver {
                 break;
         }
         String mymsg = intent.getStringExtra("msg");
-        new GMailSender(CheckMail.getUserName(), CheckMail.getPassword(), "return--" + msg, mymsg, CheckMail.getUserName(), CheckMail.getUserName());
+        new GMailSender(GMailConnexion.myConnexion, "return--" + msg, mymsg, CheckMail.getUserName());
     }
 }

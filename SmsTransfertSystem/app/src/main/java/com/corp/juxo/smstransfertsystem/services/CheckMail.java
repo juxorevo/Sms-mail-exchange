@@ -14,13 +14,11 @@ import com.corp.juxo.smstransfertsystem.tools.MmsTools;
 
 public class CheckMail extends Service {
 
-    private final int TEMPS_REFRESH = 2000;
-    private static String SENT = "SMS_SENT";
     private static final String SMSSENT = "android.provider.Telephony.SMS_RECEIVED";
     private static final String ACTION_MMS_RECEIVED = "android.provider.Telephony.WAP_PUSH_RECEIVED";
     private static final String MMS_DATA_TYPE = "application/vnd.wap.mms-message";
     public static CheckMail me;
-    private Intent intentSent;
+    private Intent intentSent = null;
     private CheckMailBinder binder;
     private ThreadReceptionMail rM;
     private ThreadEnvoieSms tE;
@@ -42,7 +40,6 @@ public class CheckMail extends Service {
 
     @Override
     public void onCreate() {
-        System.out.println("onCreate()");
         super.onCreate();
 
     }
@@ -54,9 +51,7 @@ public class CheckMail extends Service {
 
     @Override
     public void onDestroy() {
-        System.out.println("onDestroy()");
         super.onDestroy();
-        //stopSystem();
     }
 
     @Override
@@ -67,9 +62,7 @@ public class CheckMail extends Service {
 
 
     public void startSystem() {
-
         System.out.println("System GO");
-
         if (rM == null) {
             rM = new ThreadReceptionMail(this, intentSent);
             rM.start();
@@ -119,7 +112,10 @@ public class CheckMail extends Service {
     public void stopSystem() {
         System.out.println("System STOP");
         this.unregisterReceiver(receiverSms);
+        this.unregisterReceiver(receiverMms);
         receiverSms = null;
+        receiverMms = null;
+
         //STOP THREAD
         ThreadEnvoieSms.setExecute(false);
         ThreadEnvoieMail.setExecute(false);
